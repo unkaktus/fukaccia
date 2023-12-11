@@ -2,15 +2,16 @@ version: '3'
 
 tasks:
   install-deps:
-      - mamba install --yes -c conda-forge fftw gsl blas go gcc g++
+      - mamba install --yes -c conda-forge pkg-config fftw gsl blas go gcc gxx boost-cpp
 
   build-fuka-exporter:
     dir: fuka-exporter
     cmds:
       - g++ -fPIC -fopenmp -Wall -Wno-comment -std=c++17 -I${CONDA_PREFIX}/include -I${HOME_KADATH}/include -c -o fuka_exporter.o fuka_exporter.cc -lgsl -lblas -lfftw3 -lboost
-      - g++ -o libfuka_exporter.a fuka_exporter.o ${HOME_KADATH}/lib/libkadath.a -static-libstdc++
+      - g++ -shared -o libfuka_exporter.so fuka_exporter.o $HOME_KADATH/lib/libkadath.a -static-libgcc -static-libstdc++
       - rm fuka_exporter.o
   build:
+    deps: ['build-fuka-exporter']
     cmds:
       - go build -v -o fukaccia
       - go build -v -o libfukaccia.so -buildmode=c-shared

@@ -1,8 +1,9 @@
 package main
 
 // #cgo pkg-config: gsl
+// #cgo linux CFLAGS: -I./fuka-exporter
 // #cgo linux LDFLAGS: -L./fuka-exporter -lfuka_exporter -lfftw3
-// #include "fuka-exporter/fuka-exporter.h"
+// #include "libfuka_exporter.h"
 import "C"
 
 import (

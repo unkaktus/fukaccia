@@ -1,0 +1,45 @@
+# boa recipe for fukaccia
+# Ivan Markin, 12/2023
+#
+# Requires exported path to Kadath/FUKA
+# $ export HOME_KADATH=$HOME/fuka/
+
+context:
+  version: 1.0.1
+package:
+  name: "fukaccia"
+  version: '{{ version }}'
+
+source:
+  path: .
+
+requirements:
+  build:
+    - go-task
+    - compilers
+    - pkg-config
+    - gsl
+    - fftw
+    - boost
+    - boost-cpp
+    # - scalapack
+    - blas
+    - go
+  run:
+    - gsl
+    - fftw
+    - boost
+    - boost-cpp
+    # - scalapack # ScaLAPACK requires MPI, and thus will mess up the mixed installations
+    - blas
+
+build:
+  script_env:
+    HOME_KADATH: "{{ environ['HOME_KADATH'] }}"
+  script:
+    - task build
+    - mv fuka-exporter/libfuka_exporter.so ${PREFIX}/lib/
+    - mv fuka-exporter/libfuka_exporter.h ${PREFIX}/include/
+    - mv libfukaccia.so ${PREFIX}/lib/
+    - mv libfukaccia.h ${PREFIX}/include/
+    - mv fukaccia ${PREFIX}/bin/
