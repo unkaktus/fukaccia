@@ -5,7 +5,7 @@
 # $ export HOME_KADATH=$HOME/fuka/
 
 context:
-  version: 1.0.1
+  version: 1.0.5
 package:
   name: "fukaccia"
   version: '{{ version }}'
@@ -17,6 +17,7 @@ requirements:
   build:
     - go-task
     - compilers
+    - binutils
     - pkg-config
     - gsl
     - fftw
@@ -27,6 +28,7 @@ requirements:
     - go
   run:
     - gsl
+    - binutils # For modern ld > 2.32, otherwise will not link
     - fftw
     - boost
     - boost-cpp
