@@ -2,16 +2,56 @@ version: '3'
 
 tasks:
   install-deps:
-      - mamba install --yes -c conda-forge pkg-config fftw gsl blas go gcc gxx boost-cpp
+    cmds:
+      - cmd: mamba install --yes -c conda-forge pkg-config fftw gsl blas go gcc gxx boost-cpp
+        platforms: [linux]
+      - cmd: mamba install --yes -c conda-forge pkg-config fftw gsl blas go boost-cpp
+        platforms: [darwin]
 
   build-fuka-exporter:
+    preconditions:
+      - sh: "[ -v HOME_KADATH ]"
     dir: fuka-exporter
     cmds:
-      - g++ -fPIC -fopenmp -Wall -Wno-comment -std=c++17 -I${CONDA_PREFIX}/include -I${HOME_KADATH}/include -c -o fuka_exporter.o fuka_exporter.cc -lgsl -lblas -lfftw3 -lboost
-      - g++ -shared -o libfuka_exporter.so fuka_exporter.o $HOME_KADATH/lib/libkadath.a -static-libgcc -static-libstdc++
+      - cmd: g++ -fPIC -fopenmp -Wall -Wno-comment -std=c++17 -I${CONDA_PREFIX}/include -I${HOME_KADATH}/include -c -o fuka_exporter.o fuka_exporter.cc -lgsl -lblas -lfftw3 -lboost
+        platforms: [linux]
+      - cmd: clang++ -fPIC -Wno-everything -std=c++17 -I${CONDA_PREFIX}/include -I${HOME_KADATH}/include -c -o fuka_exporter.o fuka_exporter.cc
+        platforms: [darwin]
+      - cmd: g++ -shared -o libfuka_exporter.so fuka_exporter.o $HOME_KADATH/lib/libkadath.a -static-libgcc -static-libstdc++
+        platforms: [linux]
+      - cmd: clang++ -shared -o libfuka_exporter.dylib fuka_exporter.o -L${CONDA_PREFIX}/lib $HOME_KADATH/lib/libkadath.a -lgsl -lblas -lfftw3 #-lboost
+        platforms: [darwin]
       - rm fuka_exporter.o
   build:
+    preconditions:
+      - sh: "[ -v HOME_KADATH ]"
     deps: ['build-fuka-exporter']
     cmds:
-      - go build -v -o fukaccia
-      - go build -v -o libfukaccia.so -buildmode=c-shared
+      - cmd: go build -v -o fukaccia
+        platforms: [linux]
+      - cmd: env CC=clang go build -v -o fukaccia
+        platforms: [darwin]
+      - cmd: go build -v -o libfukaccia.so -buildmode=c-shared
+        platforms: [linux]
+      - cmd: env CC=clang go build -v -o libfukaccia.dylib -buildmode=c-shared
+        platforms: [darwin]
+
+  install:
+    cmds:
+      - cmd: cp fuka-exporter/libfuka_exporter.so ${CONDA_PREFIX}/lib/
+        platforms: [linux]
+      - cmd: cp fuka-exporter/libfuka_exporter.dylib ${CONDA_PREFIX}/lib/
+        platforms: [darwin]
+      - cmd: cp libfukaccia.so ${CONDA_PREFIX}/lib/
+        platforms: [linux]
+      - cmd: cp libfukaccia.dylib ${CONDA_PREFIX}/lib/
+        platforms: [darwin]
+      - cp fuka-exporter/libfuka_exporter.h ${CONDA_PREFIX}/include/
+      - cp libfukaccia.h ${CONDA_PREFIX}/include/
+      - cp fukaccia ${CONDA_PREFIX}/bin/
+
+  default:
+    cmds:
+      - task: install-deps
+      - task: build
+      - task: install
