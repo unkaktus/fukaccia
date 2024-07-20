@@ -12,8 +12,10 @@ tasks:
     preconditions:
       - sh: "[ -v HOME_KADATH ]"
     dir: fuka-exporter
+    env:
+      CGO_ENABLED: 1
     cmds:
-      - cmd: g++ -fPIC -fopenmp -Wall -Wno-comment -std=c++17 -I${CONDA_PREFIX}/include -I${HOME_KADATH}/include -c -o fuka_exporter.o fuka_exporter.cc -lgsl -lblas -lfftw3 -lboost
+      - cmd: g++ -fPIC -fopenmp -Wall -Wno-comment -Wno-reorder -Wno-sign-compare -std=c++17 -I${CONDA_PREFIX}/include -I${HOME_KADATH}/include -c -o fuka_exporter.o fuka_exporter.cc -lgsl -lblas -lfftw3 -lboost
         platforms: [linux]
       - cmd: clang++ -fPIC -Wno-everything -std=c++17 -I${CONDA_PREFIX}/include -I${HOME_KADATH}/include -c -o fuka_exporter.o fuka_exporter.cc
         platforms: [darwin]
