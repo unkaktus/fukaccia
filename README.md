@@ -8,17 +8,24 @@ which is not available in FUKA exporter functions at the moment.
 
 Installation
 ----
+Install Task first (https://taskfile.dev).
+
+Activate target Mamba/Conda environment.
+
+Then, install the run dependencies into the environment:
 ```shell
-mamba install -c https://mamba.unkaktus.art fukaccia
+task install-run-deps
+```
+
+Finally, install binary distribution of `fukaccia`:
+```shell
+task install-binary
 ```
 
 Building from source
 ----
 
-Install Task first (https://taskfile.dev):
-```shell
-mamba install go-task
-```
+Install Task first (https://taskfile.dev).
 
 Build FUKA, so that it produces a static C++ library called `libkadath.a`
 in `$HOME_KADATH/lib`.
@@ -28,9 +35,9 @@ Export variable that points to the FUKA build:
 export HOME_KADATH=$HOME/fuka
 ```
 
-Install dependecies via
+Install build dependecies via
 ```shell
-task install-deps
+task install-build-deps
 ```
 
 Run the build:

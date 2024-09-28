@@ -1,7 +1,14 @@
 version: '3'
 
 tasks:
-  install-deps:
+  install-build-deps:
+    cmds:
+      - cmd: mamba install --yes -c conda-forge pkg-config fftw gsl blas go gcc gxx boost-cpp
+        platforms: [linux]
+      - cmd: mamba install --yes -c conda-forge pkg-config fftw gsl blas go boost-cpp
+        platforms: [darwin]
+
+  install-run-deps:
     cmds:
       - cmd: mamba install --yes -c conda-forge pkg-config fftw gsl blas go gcc gxx boost-cpp
         platforms: [linux]
@@ -52,8 +59,22 @@ tasks:
       - cp libfukaccia.h ${CONDA_PREFIX}/include/
       - cp fukaccia ${CONDA_PREFIX}/bin/
 
+  package-binary:
+    platforms: [linux]
+    cmds:
+      - tar czv -f fukaccia-linux.tar.gz fuka-exporter/libfuka_exporter.so libfukaccia.so fuka-exporter/libfuka_exporter.h libfukaccia.h fukaccia
+
+  install-binary:
+    preconditions:
+      - sh: "[ -v CONDA_PREFIX ]"
+    platforms: [linux]
+    cmds:
+      - curl -LO https://github.com/unkaktus/fukaccia/releases/latest/download/fukaccia-linux.tar.gz
+      - tar xzv -f fukaccia-linux.tar.gz
+      - task: install
+
   default:
     cmds:
-      - task: install-deps
+      - task: install-build-deps
       - task: build
       - task: install
