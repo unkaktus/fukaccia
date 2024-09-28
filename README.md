@@ -52,3 +52,14 @@ append `LD_LIBRARY_PATH`. The `fukaccia` binary should be put into the paths
 specified in `$PATH` environment variable.
 
 After that, your can link with `libfukaccia`.
+
+Troubleshooting
+---------------
+
+On older Linux distributions, the GNU ld linker has a bug that prevents successful linking
+with Go libary. It throws errors about debug sections in such a case. To resolve this,
+use a fresher linker:
+
+```shell
+mamba install binutils
+```
