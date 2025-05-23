@@ -2,7 +2,7 @@ package main
 
 // #cgo pkg-config: gsl
 // #cgo linux darwin CFLAGS: -I./fuka-exporter
-// #cgo linux darwin LDFLAGS: -L./fuka-exporter -lfuka_exporter -lfftw3
+// #cgo linux darwin LDFLAGS: -L./fuka-exporter -lfuka_exporter -lfftw3 -llapack
 // #include "libfuka_exporter.h"
 import "C"
 

@@ -22,13 +22,13 @@ tasks:
     env:
       CGO_ENABLED: 1
     cmds:
-      - cmd: g++ -fPIC -fopenmp -Wall -Wno-comment -Wno-reorder -Wno-sign-compare -std=c++17 -I${CONDA_PREFIX}/include -I${HOME_KADATH}/include -c -o fuka_exporter.o fuka_exporter.cc -lgsl -lblas -lfftw3 -lboost
+      - cmd: g++ -fPIC -fopenmp -Wall -Wno-comment -Wno-reorder -Wno-sign-compare -std=c++17 -I${CONDA_PREFIX}/include -I${HOME_KADATH}/include -c -o fuka_exporter.o fuka_exporter.cc -lgsl -lblas -llapack -lfftw3 -lboost
         platforms: [linux]
       - cmd: clang++ -fPIC -Wno-everything -std=c++17 -I${CONDA_PREFIX}/include -I${HOME_KADATH}/include -c -o fuka_exporter.o fuka_exporter.cc
         platforms: [darwin]
       - cmd: g++ -shared -o libfuka_exporter.so fuka_exporter.o $HOME_KADATH/lib/libkadath.a -static-libgcc -static-libstdc++
         platforms: [linux]
-      - cmd: clang++ -shared -o libfuka_exporter.dylib fuka_exporter.o -L${CONDA_PREFIX}/lib $HOME_KADATH/lib/libkadath.a -lgsl -lblas -lfftw3 #-lboost
+      - cmd: clang++ -shared -o libfuka_exporter.dylib fuka_exporter.o -L${CONDA_PREFIX}/lib $HOME_KADATH/lib/libkadath.a -lgsl -lblas -llapack -lfftw3 -lboost
         platforms: [darwin]
       - rm fuka_exporter.o
   build:
@@ -47,6 +47,9 @@ tasks:
 
   install:
     cmds:
+      - mkdir -p ${CONDA_PREFIX}/lib
+      - mkdir -p ${CONDA_PREFIX}/include
+      - mkdir -p ${CONDA_PREFIX}/bin
       - cmd: cp fuka-exporter/libfuka_exporter.so ${CONDA_PREFIX}/lib/
         platforms: [linux]
       - cmd: cp fuka-exporter/libfuka_exporter.dylib ${CONDA_PREFIX}/lib/
